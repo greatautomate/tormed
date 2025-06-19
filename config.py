@@ -1,7 +1,7 @@
 import os
 from typing import List, Optional
 from pydantic_settings import BaseSettings
-from pydantic import validator
+from pydantic import field_validator
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,21 +33,23 @@ class Settings(BaseSettings):
     # Server Configuration (for Render.com)
     PORT: int = 10000
     
-    @validator('ADMIN_USER_IDS', pre=True)
+    @field_validator('ADMIN_USER_IDS', mode='before')
+    @classmethod
     def parse_admin_user_ids(cls, v):
         if isinstance(v, str):
             return [int(x.strip()) for x in v.split(',') if x.strip()]
+        elif isinstance(v, int):
+            return [v]  # Convert single int to list
         return v
     
-    @validator('ALLOWED_TORRENT_EXTENSIONS', pre=True)
+    @field_validator('ALLOWED_TORRENT_EXTENSIONS', mode='before')
+    @classmethod
     def parse_extensions(cls, v):
         if isinstance(v, str):
             return [x.strip() for x in v.split(',') if x.strip()]
         return v
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = {"env_file": ".env", "case_sensitive": True}
 
 
 # Global settings instance
