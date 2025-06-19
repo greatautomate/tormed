@@ -1,10 +1,11 @@
 services:
   - type: worker
-    name: torrent-uploader-bot
+    region: virginia
+    name: tor-med
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python main.py
-    plan: free
+    plan: starter
     envVars:
       - key: API_ID
         sync: false
